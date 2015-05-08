@@ -1,14 +1,14 @@
 '''
 
 Implementation of projectile motion
-
+Adding Stand and Basket Ring
 '''
 
-import time
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from math import *
+import time
 
 v0 = 150		#initial velocity
 angle = 45	#initial direction	
@@ -21,14 +21,12 @@ movy = b
 
 def InitGL(Width, Height): 
  
-        glClearColor(0.0, 0.0, 0.0, 1.0) 
+        glClearColor(0.3, 0.3, 1.0, 0.5) 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(75.0, float(Width)/float(Height), 1, 100.0)
         #gluLookAt()
         glMatrixMode(GL_PROJECTION)
-        #glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 30)
-        #glFrustum(-3.0,50.0,-5.0,100.0,10.0,-10.0)
         
         #gluLookAt(0,0,5,2,0.5,0,0,1,0,)
         glTranslate(-18,0,-15)
@@ -42,6 +40,23 @@ def projectile():
 	glLoadIdentity()
 	glTranslatef(0,-6,-10)
 	
+	#Stand
+	glPushMatrix()
+	glLineWidth(5)
+	glTranslate(40,4.5,0)
+	glScale(1,15,0.2)
+	glutWireCube(1)
+	glPopMatrix()
+	
+	#BasketRing
+	glPushMatrix()
+	glTranslate(38.4,7,0)
+	glRotate(90,1,0,0)
+	glScale(0.4,0.8,0.5)
+	glColor3f(0.7, 0.2, 0.3)
+	glutSolidTorus(0.5, 1.1, 20, 15)
+	glPopMatrix()
+		
 	move()			#performs projectile motion
 	glColor3f(0.9,0.0,0.0)
 	glTranslatef(movx,movy,0)
