@@ -1,7 +1,11 @@
 '''
+ballthrow.py
+Simple basketball view using pyopengl 
 
 Implementation of projectile motion
-Adding Stand and Basket Ring
+Added Basket Ring
+Added Ground and walls
+
 '''
 
 from OpenGL.GL import *
@@ -18,6 +22,8 @@ a=-3	#initial x-coord of ball position
 b=-2	#initial y-coord of ball position
 movx = a
 movy = b
+x=-3
+y=-8
 
 def InitGL(Width, Height): 
  
@@ -27,7 +33,6 @@ def InitGL(Width, Height):
         gluPerspective(75.0, float(Width)/float(Height), 1, 100.0)
         #gluLookAt()
         glMatrixMode(GL_PROJECTION)
-        
         #gluLookAt(0,0,5,2,0.5,0,0,1,0,)
         glTranslate(-18,0,-15)
         glMatrixMode(GL_MODELVIEW)
@@ -35,11 +40,12 @@ def InitGL(Width, Height):
 
 
 def projectile():
-	global a,b,movx,movy
+	global a,b,movx,movy,x,y
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 	glLoadIdentity()
-	glTranslatef(0,-6,-10)
+	glTranslatef(0,-4,-10)
 	
+	'''
 	#Stand
 	glPushMatrix()
 	glLineWidth(5)
@@ -47,17 +53,46 @@ def projectile():
 	glScale(1,15,0.2)
 	glutWireCube(1)
 	glPopMatrix()
+	'''
+	
+	# Wall
+	glPushMatrix()
+	glTranslate(42,5,0)
+	glScale(3,30,0.5)
+	glColor3f(1.0, 0.7, 0.0)
+	glutSolidCube(1)
+	glPopMatrix()
+	
+	#BackGroundFLoor
+	glPushMatrix()
+	glTranslate(18,8,-10)
+	glScale(62,45,0.2)
+	glColor3f(0.6, 0.6, 0.6)
+	glutSolidCube(1)
+	glPopMatrix()
+	
+	
+	#FLoor
+	glPushMatrix()
+	glTranslate(18,-9,0)
+	glScale(48,2,0.2)
+	glColor3f(1.0, 1.0, 0.0)
+	glutSolidCube(1)
+	glPopMatrix()
 	
 	#BasketRing
 	glPushMatrix()
-	glTranslate(38.4,7,0)
+	glTranslate(38,10,0)
 	glRotate(90,1,0,0)
-	glScale(0.4,0.8,0.5)
+	glScale(1,1.4,0)
 	glColor3f(0.7, 0.2, 0.3)
 	glutSolidTorus(0.5, 1.1, 20, 15)
 	glPopMatrix()
 		
 	move()			#performs projectile motion
+	
+	#Ball
+	glTranslatef(0,-6,0)
 	glColor3f(0.9,0.0,0.0)
 	glTranslatef(movx,movy,0)
 	glutSolidSphere(0.4,20,10)
