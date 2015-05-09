@@ -6,6 +6,8 @@ Implementation of projectile motion
 Added Basket Ring
 Added Ground and walls
 
+Enabling GL_LIGHTING and AMBIENT light
+
 '''
 
 from OpenGL.GL import *
@@ -26,24 +28,38 @@ x=-3
 y=-8
 
 def InitGL(Width, Height): 
- 
-        glClearColor(0.3, 0.3, 1.0, 0.5) 
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(75.0, float(Width)/float(Height), 1, 100.0)
-        #gluLookAt()
-        glMatrixMode(GL_PROJECTION)
-        #gluLookAt(0,0,5,2,0.5,0,0,1,0,)
-        glTranslate(-18,0,-15)
-        glMatrixMode(GL_MODELVIEW)
-	
 
+	glClearColor(0.3, 0.3, 1.0, 0.5) 
+	glMatrixMode(GL_PROJECTION)
+	glLoadIdentity()
+	gluPerspective(75.0, float(Width)/float(Height), 1, 100.0)
+	#gluLookAt()
+	glMatrixMode(GL_PROJECTION)
+	#gluLookAt(0,0,5,2,0.5,0,0,1,0,)
+	glTranslate(-18,0,-15)
+	glMatrixMode(GL_MODELVIEW)
+	
+	glEnable(GL_LIGHTING)
+	glEnable(GL_LIGHT0)
+	glEnable(GL_DEPTH_TEST)
+	glEnable(GL_COLOR_MATERIAL)
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS,20)
+	
+	mat_shininess = [30.0]
+	white_light = [0.8, 0.8, 0.8, 1.0]
+	glShadeModel(GL_SMOOTH)
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light)
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
+	
 
 def projectile():
 	global a,b,movx,movy,x,y
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 	glLoadIdentity()
 	glTranslatef(0,-4,-10)
+	
+	glLight(GL_LIGHT0, GL_POSITION, (25,20,10,0.0))
+
 	
 	'''
 	#Stand
@@ -58,7 +74,7 @@ def projectile():
 	# Wall
 	glPushMatrix()
 	glTranslate(42,5,0)
-	glScale(3,30,0.5)
+	glScale(3,30,2)
 	glColor3f(1.0, 0.7, 0.0)
 	glutSolidCube(1)
 	glPopMatrix()
@@ -67,15 +83,15 @@ def projectile():
 	glPushMatrix()
 	glTranslate(18,8,-10)
 	glScale(62,45,0.2)
-	glColor3f(0.6, 0.6, 0.6)
+	glColor3f(0, 1, 1)
 	glutSolidCube(1)
 	glPopMatrix()
 	
 	
 	#FLoor
 	glPushMatrix()
-	glTranslate(18,-9,0)
-	glScale(48,2,0.2)
+	glTranslate(18,-9.5,0)
+	glScale(48,2,2)
 	glColor3f(1.0, 1.0, 0.0)
 	glutSolidCube(1)
 	glPopMatrix()
@@ -84,7 +100,7 @@ def projectile():
 	glPushMatrix()
 	glTranslate(38,10,0)
 	glRotate(90,1,0,0)
-	glScale(1,1.4,0)
+	glScale(1,1.5,0)
 	glColor3f(0.7, 0.2, 0.3)
 	glutSolidTorus(0.5, 1.1, 20, 15)
 	glPopMatrix()
@@ -95,7 +111,7 @@ def projectile():
 	glTranslatef(0,-6,0)
 	glColor3f(0.9,0.0,0.0)
 	glTranslatef(movx,movy,0)
-	glutSolidSphere(0.4,20,10)
+	glutSolidSphere(0.5,20,10)
 
 	glFlush()
 	glutSwapBuffers()
