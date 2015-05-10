@@ -8,6 +8,7 @@ Added Ground and walls
 
 Enabling GL_LIGHTING and AMBIENT light
 Added spot light
+Added trigger
 
 '''
 
@@ -27,6 +28,10 @@ movx = a
 movy = b
 x=-3
 y=-8
+shoulder = 0.0
+elbow = 0.0
+
+start=0
 
 def InitGL(Width, Height): 
 
@@ -56,11 +61,11 @@ def InitGL(Width, Height):
 	
 
 def projectile():
-	global a,b,movx,movy,x,y
+	global a,b,movx,movy,x,y,elbow,shoulder,start
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 	glLoadIdentity()
 	glTranslatef(0,-4,-10)
-	
+	glEnable(GL_LIGHTING)
 	glLight(GL_LIGHT0, GL_POSITION, (25,20,10,0.0))
 
 	
@@ -74,18 +79,18 @@ def projectile():
 	glPopMatrix()
 	'''
 	
-	# Wall
+	# Side Wall
 	glPushMatrix()
 	glTranslate(42,5,0)
-	glScale(3,30,2)
+	glScale(3,40,30)
 	glColor3f(1.0, 0.7, 0.0)
 	glutSolidCube(1)
 	glPopMatrix()
 	
-	#BackGroundFLoor
+	#Back Wall
 	glPushMatrix()
 	glTranslate(18,8,-10)
-	glScale(62,45,0.2)
+	glScale(56,45,0.2)
 	glColor3f(0, 1, 1)
 	glutSolidCube(1)
 	glPopMatrix()
@@ -117,7 +122,7 @@ def projectile():
 	#FLoor
 	glPushMatrix()
 	glTranslate(18,-9.5,0)
-	glScale(48,2,2)
+	glScale(55,2,26)
 	glColor3f(1.0, 1.0, 0.0)
 	glutSolidCube(1)
 	glPopMatrix()
@@ -130,8 +135,37 @@ def projectile():
 	glColor3f(0.7, 0.2, 0.3)
 	glutSolidTorus(0.5, 1.1, 20, 15)
 	glPopMatrix()
+	
+	if start==0:
+		time.sleep(0.09)
+		shoulder = (shoulder + 5) % 360
+		elbow = (elbow + 5) % 360
+		if shoulder>350:
+			start=1
+	else:	
+		move()			#performs projectile motion
 		
-	move()			#performs projectile motion
+	glPushMatrix()
+
+	glTranslatef (-6.0, -8.0, 0.0)
+	glRotatef (shoulder, 0.0, 0.0, 1.0) # shoulder robot
+	glTranslatef (1.0, 0.0, 0.0)
+
+	glPushMatrix()
+	glScalef (2.0, 0.4, 1.0)
+	glutSolidCube (1.0)
+	glPopMatrix()
+
+	glTranslatef (1.0, 0.0, 0.0)
+	glRotatef (elbow, 0.0, 0.0, 1.0)	# elbow   robot
+	glTranslatef (1.0, 0.0, 0.0)
+
+	glPushMatrix()
+	glScalef (2.0, 0.4, 1.0)
+	glutSolidCube (1.0)
+	glPopMatrix()
+
+	glPopMatrix()	
 	
 	#Ball
 	glTranslatef(0,-6,0)
