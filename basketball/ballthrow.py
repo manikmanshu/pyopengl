@@ -9,6 +9,9 @@ Added Ground and walls
 Enabling GL_LIGHTING and AMBIENT light
 Added spot light
 Added trigger
+Added feature of Camera View Change
+
+Added Collision of ball with walls, ground and basket ring
 
 '''
 
@@ -19,7 +22,9 @@ from math import *
 import time
 
 v0 = 150		#initial velocity
-angle = 45	#initial direction	
+angle = 45	#initial direction
+#v0 = input("ENter velocity: ") #150		#initial velocity
+#angle = input("Enter direction: ") #45	#initial direction	
 radangle = (angle*3.14)/180  # degree to radians
 t = 0
 a=-3	#initial x-coord of ball position
@@ -32,6 +37,8 @@ shoulder = 0.0
 elbow = 0.0
 
 start=0
+final_view = 0
+wallcollide=0
 
 def InitGL(Width, Height): 
 
@@ -61,12 +68,28 @@ def InitGL(Width, Height):
 	
 
 def projectile():
-	global a,b,movx,movy,x,y,elbow,shoulder,start
+	global a,b,movx,movy,x,y,elbow,shoulder,start,final_view
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 	glLoadIdentity()
 	glTranslatef(0,-4,-10)
 	glEnable(GL_LIGHTING)
 	glLight(GL_LIGHT0, GL_POSITION, (25,20,10,0.0))
+	
+	if movx<-2:
+		glTranslate(12,2,5)
+	elif movx<10:
+		gluLookAt(0,0,5,-5,-5,0,0,1,0,)
+	elif movx<25:
+		gluLookAt(0,10,5,0,-5,0,0,1,0,)
+	elif movx <30:
+		if final_view==0:
+			glRotate(30,1,0,0)
+			glRotate(110,0,1,0)
+		else:	
+			gluLookAt(0,0,15,0,0,0,0,1,0,)
+	else:
+		final_view = 1
+		gluLookAt(0,0,15,0,0,0,0,1,0,)
 
 	
 	'''
@@ -178,24 +201,68 @@ def projectile():
 
 	
 def move():
-	global v0,t,angle,movx,movy,a,b,radangle
+	global v0,t,angle,movx,movy,a,b,radangle,wallcollide,tx,ty
 	time.sleep(0.02)
-	if radangle > 0 :
+	if wallcollide==0:
+		if radangle > 0 :
+			
+			vx = v0*cos(radangle)		#velocity in x- direction
+			vy = v0*sin(radangle) - 9.8*t	#velocity in y-direction
+			movx = a+v0*t*cos(radangle)	#instantaneous x - position
+			movy = b+v0*t*sin(radangle) - 4.9*t*t #instantaneous y-position
+			
+			if movx >=38:
+				tx = movx
+				ty = movy
+				wallcollide = 1
+				#t=0
+				
+			if vx!=0:
+				radangle = atan(vy/vx)	#instantaneous angle
+			
+			if movx >= 35.8 and movx <= 36.5:
+				if movy >=15.1 and movy <=16.3:
+					wallcollide = 2
+				
+			#print movx,movy		
+		#Momentum Conservation
+		else:
+			v0 = v0/1.5
+			radangle =45*3.14/180
+			a = movx
+			b = movy 
+			t=0
+	elif wallcollide==1:
+		#time.sleep(0.2)
+		
 		vx = v0*cos(radangle)		#velocity in x- direction
 		vy = v0*sin(radangle) - 9.8*t	#velocity in y-direction
-		movx = a+v0*t*cos(radangle)	#instantaneous x - position
-		movy = b+v0*t*sin(radangle) - 4.9*t*t #instantaneous y-position
+		tempx = a+v0*t*cos(radangle)	#instantaneous x - position
+		tempy = b+v0*t*sin(radangle) - 4.9*t*t #instantaneous y-position
+			
+		movx = tx - (tempx - tx)
+		movy = ty + (tempy - ty)
+			
 		if vx!=0:
 			radangle = atan(vy/vx)	#instantaneous angle
 			
+				#print wallcollide	
 			
-	#Momentum Conservation
+		if movy<=-2 or movx<0 :
+			wallcollide = 3	
+			movx = tx - (tempx - tx)
+			movy = ty + (tempy - ty)
+		#print movx,movy		
+		#movx = movx-3
+	elif wallcollide==2:
+		if movy>=b:			
+			movy -= 0.1
+			
+		if movy<=-2 or movx<0 :
+			wallcollide = 3	
+
 	else:
-		v0 = v0/1.5
-		radangle =45*3.14/180
-		a = movx
-		b = movy 
-		t=0
+		pass
 	t=t+0.001
 	glutPostRedisplay()
 	
@@ -205,7 +272,7 @@ def main():
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
 	glutInitWindowSize(1000,700)
 	glutInitWindowPosition(0,0)	
-	glutCreateWindow('PROJECTILE')
+	glutCreateWindow('BasketBall')
 	
 	glutDisplayFunc(projectile)
 	glutIdleFunc(projectile)
