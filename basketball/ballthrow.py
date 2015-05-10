@@ -14,6 +14,7 @@ Added feature of Camera View Change
 Added Collision of ball with walls, ground and basket ring
 
 Added reset feature
+Change camera manually using keyboard key 'c'
 
 '''
 
@@ -23,10 +24,10 @@ from OpenGL.GLU import *
 from math import *
 import time
 
-v0 = 150		#initial velocity
-angle = 45	#initial direction
-#v0 = input("ENter velocity: ") #150		#initial velocity
-#angle = input("Enter direction: ") #45	#initial direction	
+#v0 = 150		#initial velocity
+#angle = 45	#initial direction
+v0 = input("ENter velocity: ") #150		#initial velocity
+angle = input("Enter direction: ") #45	#initial direction	
 radangle = (angle*3.14)/180  # degree to radians
 temp_vel = v0
 t = 0
@@ -42,6 +43,7 @@ elbow = 0.0
 start=0
 final_view = 0
 wallcollide=0
+camera=0
 
 def InitGL(Width, Height): 
 
@@ -78,21 +80,7 @@ def projectile():
 	glEnable(GL_LIGHTING)
 	glLight(GL_LIGHT0, GL_POSITION, (25,20,10,0.0))
 	
-	if movx<-2:
-		glTranslate(12,2,5)
-	elif movx<10:
-		gluLookAt(0,0,5,-5,-5,0,0,1,0,)
-	elif movx<25:
-		gluLookAt(0,10,5,0,-5,0,0,1,0,)
-	elif movx <30:
-		if final_view==0:
-			glRotate(30,1,0,0)
-			glRotate(110,0,1,0)
-		else:	
-			gluLookAt(0,0,15,0,0,0,0,1,0,)
-	else:
-		final_view = 1
-		gluLookAt(0,0,15,0,0,0,0,1,0,)
+	camera_view()
 
 	
 	'''
@@ -104,7 +92,7 @@ def projectile():
 	glutWireCube(1)
 	glPopMatrix()
 	'''
-	
+	glDisable(GL_LIGHTING)
 	# Side Wall
 	glPushMatrix()
 	glTranslate(42,5,0)
@@ -112,6 +100,7 @@ def projectile():
 	glColor3f(1.0, 0.7, 0.0)
 	glutSolidCube(1)
 	glPopMatrix()
+	glEnable(GL_LIGHTING)
 	
 	#Back Wall
 	glPushMatrix()
@@ -286,6 +275,33 @@ def reset_game():
 	elbow = 0
 	final_view = 0
 	
+def camera_view():
+	global camera1,camera2,camera3
+	if camera==0:
+		glTranslate(12,2,5)
+	elif camera==1:
+		gluLookAt(0,0,5,-5,-5,0,0,1,0,)
+	elif camera==2:
+		gluLookAt(0,10,5,0,-5,0,0,1,0,)
+	elif camera==3:	
+		glRotate(30,1,0,0)
+		glRotate(110,0,1,0)
+	elif camera==4:
+		pass
+	else:
+		gluLookAt(0,0,15,0,0,0,0,1,0,)
+		
+def keyboard(key, x, y):
+	global shoulder, elbow,camera
+
+	if key == chr(27): sys.exit(0)
+	elif key == 'c':
+		camera = (camera + 1)%6
+		glutPostRedisplay()
+	elif key == 'C':
+		camera = (camera - 1)%6
+		glutPostRedisplay()			
+
 def main():
  
 	glutInit(sys.argv)
@@ -296,6 +312,7 @@ def main():
 	
 	glutDisplayFunc(projectile)
 	glutIdleFunc(projectile)
+	glutKeyboardFunc(keyboard)
 	InitGL(640, 480)
 	glutMainLoop()
         
