@@ -7,6 +7,7 @@ Added Basket Ring
 Added Ground and walls
 
 Enabling GL_LIGHTING and AMBIENT light
+Added spot light
 
 '''
 
@@ -50,6 +51,8 @@ def InitGL(Width, Height):
 	glShadeModel(GL_SMOOTH)
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light)
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
+	glEnable(GL_CULL_FACE)
+	glCullFace(GL_BACK)
 	
 
 def projectile():
@@ -87,6 +90,29 @@ def projectile():
 	glutSolidCube(1)
 	glPopMatrix()
 	
+	
+	position =  [0.0, 0.0, 0.0, 1.0]
+	
+	#glutWireCube (1)
+	glPushMatrix ()
+	glLightfv (GL_LIGHT0, GL_POSITION, position)
+	glDisable (GL_LIGHTING)
+	glColor3f (0.0, 1.0, 1.0)
+	#glutWireCube (1)
+	glEnable (GL_LIGHTING)
+	glPopMatrix ()
+	
+	#Spot Lighting 
+	glPushMatrix()
+	pos = [movx, movy,4, 1]
+	direction = [0.0, -5.0, 0.0]
+	spotAngle = 40
+	
+	glLightfv(GL_LIGHT0, GL_POSITION, pos)
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, spotAngle)
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, direction)
+	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 1)
+	glPopMatrix()
 	
 	#FLoor
 	glPushMatrix()
