@@ -13,6 +13,8 @@ Added feature of Camera View Change
 
 Added Collision of ball with walls, ground and basket ring
 
+Added reset feature
+
 '''
 
 from OpenGL.GL import *
@@ -26,6 +28,7 @@ angle = 45	#initial direction
 #v0 = input("ENter velocity: ") #150		#initial velocity
 #angle = input("Enter direction: ") #45	#initial direction	
 radangle = (angle*3.14)/180  # degree to radians
+temp_vel = v0
 t = 0
 a=-3	#initial x-coord of ball position
 b=-2	#initial y-coord of ball position
@@ -262,9 +265,26 @@ def move():
 			wallcollide = 3	
 
 	else:
+		time.sleep(3)
+		reset_game()
 		pass
 	t=t+0.001
 	glutPostRedisplay()
+	
+def reset_game():
+	global v0,t,angle,movx,movy,a,b,radangle,x,y,wallcollide,tx,ty,start
+	global shoulder,elbow,temp_vel
+	t=0
+	v0 = temp_vel
+	a,b = -3,-2
+	movx,movy = a,b
+	radangle = (angle*3.14)/180
+	x,y = -3,-8
+	wallcollide = 0
+	start = 0
+	shoulder =0 
+	elbow = 0
+	final_view = 0
 	
 def main():
  
