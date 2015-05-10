@@ -29,7 +29,7 @@ import time
 v0 = input("ENter velocity: ") #150		#initial velocity
 angle = input("Enter direction: ") #45	#initial direction	
 radangle = (angle*3.14)/180  # degree to radians
-temp_vel = v0
+temp_vel=v0
 t = 0
 a=-3	#initial x-coord of ball position
 b=-2	#initial y-coord of ball position
@@ -37,13 +37,13 @@ movx = a
 movy = b
 x=-3
 y=-8
-shoulder = 0.0
+shoulder = 0.0  #robot arm variables
 elbow = 0.0
 
-start=0
+start=0	#trigger
 final_view = 0
-wallcollide=0
-camera=0
+wallcollide=0   #collision control
+camera=0	#camera control
 
 def InitGL(Width, Height): 
 
@@ -80,7 +80,7 @@ def projectile():
 	glEnable(GL_LIGHTING)
 	glLight(GL_LIGHT0, GL_POSITION, (25,20,10,0.0))
 	
-	camera_view()
+	camera_view()	#different camera shots
 
 	
 	'''
@@ -92,7 +92,9 @@ def projectile():
 	glutWireCube(1)
 	glPopMatrix()
 	'''
+	
 	glDisable(GL_LIGHTING)
+	
 	# Side Wall
 	glPushMatrix()
 	glTranslate(42,5,0)
@@ -109,8 +111,7 @@ def projectile():
 	glColor3f(0, 1, 1)
 	glutSolidCube(1)
 	glPopMatrix()
-	
-	
+		
 	position =  [0.0, 0.0, 0.0, 1.0]
 	
 	#glutWireCube (1)
@@ -151,6 +152,7 @@ def projectile():
 	glutSolidTorus(0.5, 1.1, 20, 15)
 	glPopMatrix()
 	
+	#trigger
 	if start==0:
 		time.sleep(0.09)
 		shoulder = (shoulder + 5) % 360
@@ -161,7 +163,6 @@ def projectile():
 		move()			#performs projectile motion
 		
 	glPushMatrix()
-
 	glTranslatef (-6.0, -8.0, 0.0)
 	glRotatef (shoulder, 0.0, 0.0, 1.0) # shoulder robot
 	glTranslatef (1.0, 0.0, 0.0)
@@ -194,7 +195,7 @@ def projectile():
 	
 def move():
 	global v0,t,angle,movx,movy,a,b,radangle,wallcollide,tx,ty
-	time.sleep(0.02)
+	time.sleep(0.02)  #delay
 	if wallcollide==0:
 		if radangle > 0 :
 			
@@ -292,7 +293,7 @@ def camera_view():
 		gluLookAt(0,0,15,0,0,0,0,1,0,)
 		
 def keyboard(key, x, y):
-	global shoulder, elbow,camera
+	global camera
 
 	if key == chr(27): sys.exit(0)
 	elif key == 'c':
