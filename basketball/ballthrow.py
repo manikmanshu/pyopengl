@@ -16,11 +16,14 @@ Added Collision of ball with walls, ground and basket ring
 Added reset feature
 Change camera manually using keyboard key 'c'
 
+Added textures using Image library 
+
 '''
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+from PIL.Image import *
 from math import *
 import time
 
@@ -45,7 +48,42 @@ final_view = 0
 wallcollide=0   #collision control
 camera=0	#camera control
 
+def CreateTexture(imagename, number):
+        global textures
+
+        image = open(imagename)
+        ix = image.size[0]
+        iy = image.size[1]
+        image = image.tostring("raw", "RGBX", 0, -1)
+
+        glBindTexture(GL_TEXTURE_2D, int(textures[number]))   
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT,1)
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+        
+
+def LoadTextures(number):
+	global texture_num, textures
+
+	textures = glGenTextures(number)
+	CreateTexture("texturedyellow.jpg",0)
+	CreateTexture("nha.jpg", 1)
+	CreateTexture("bathroomfloor.png",2)
+
+
 def InitGL(Width, Height): 
+	
+	LoadTextures(3)
+	glEnable(GL_TEXTURE_2D)     
+	glClearDepth(1.0)                       
+	glDepthFunc(GL_LESS)                    
 
 	glClearColor(0.3, 0.3, 1.0, 0.5) 
 	glMatrixMode(GL_PROJECTION)
@@ -74,6 +112,8 @@ def InitGL(Width, Height):
 
 def projectile():
 	global a,b,movx,movy,x,y,elbow,shoulder,start,final_view
+	global textures
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 	glLoadIdentity()
 	glTranslatef(0,-4,-10)
@@ -82,6 +122,38 @@ def projectile():
 	
 	camera_view()	#different camera shots
 
+	glBindTexture(GL_TEXTURE_2D, int(textures[0]))
+	glBegin(GL_QUADS)                               # Start Drawing The Cube
+
+	# Front Face (note that the texture's corners have to match the quad's corners)
+	glTexCoord2f(0.0, 0.0); glVertex3f(-14.0, -10.0,  -12.0)    # Bottom Left Of The Texture and Quad
+	glTexCoord2f(1.0, 0.0); glVertex3f( 45.0, -10.0,  -12.0)    # Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0, 1.0); glVertex3f( 45.0,  30.0,  -12.0)    # Top Right Of The Texture and Quad
+	glTexCoord2f(0.0, 1.0); glVertex3f(-14.0,  30.0,  -12.0)    # Top Left Of The Texture and Quad
+
+	glEnd()
+	
+	glBindTexture(GL_TEXTURE_2D, int(textures[1]))
+	glBegin(GL_QUADS)                               # Start Drawing The Cube
+
+	# Front Face (note that the texture's corners have to match the quad's corners)
+	glTexCoord2f(0.0, 0.0); glVertex3f(40.0, -15.0,  -13.0)    # Bottom Left Of The Texture and Quad
+	glTexCoord2f(1.0, 0.0); glVertex3f( 40.0, -15.0,  28.0)    # Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0, 1.0); glVertex3f( 40.0,  30.0,  28.0)    # Top Right Of The Texture and Quad
+	glTexCoord2f(0.0, 1.0); glVertex3f(40.0,  30.0,  -13.0)    # Top Left Of The Texture and Quad
+
+	glEnd()
+
+	glBindTexture(GL_TEXTURE_2D, int(textures[2]))
+	glBegin(GL_QUADS)                               # Start Drawing The Cube
+
+	# Front Face (note that the texture's corners have to match the quad's corners)
+	glTexCoord2f(0.0, 0.0); glVertex3f(-18.0, -8.5,  -13.0)    # Bottom Left Of The Texture and Quad
+	glTexCoord2f(1.0, 0.0); glVertex3f( -18.0, -8.5,  28.0)    # Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0, 1.0); glVertex3f( 40.0,  -8.5,  28.0)    # Top Right Of The Texture and Quad
+	glTexCoord2f(0.0, 1.0); glVertex3f(40.0,  -8.5,  -13.0)    # Top Left Of The Texture and Quad
+
+	glEnd()		
 	
 	'''
 	#Stand
@@ -93,7 +165,6 @@ def projectile():
 	glPopMatrix()
 	'''
 	
-	glDisable(GL_LIGHTING)
 	
 	# Side Wall
 	glPushMatrix()
@@ -102,14 +173,14 @@ def projectile():
 	glColor3f(1.0, 0.7, 0.0)
 	glutSolidCube(1)
 	glPopMatrix()
-	glEnable(GL_LIGHTING)
+
 	
 	#Back Wall
 	glPushMatrix()
 	glTranslate(18,8,-10)
 	glScale(56,45,0.2)
 	glColor3f(0, 1, 1)
-	glutSolidCube(1)
+	#glutSolidCube(1)
 	glPopMatrix()
 		
 	position =  [0.0, 0.0, 0.0, 1.0]
