@@ -68,14 +68,39 @@ def CreateTexture(imagename, number):
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
         
+def CreateLinearFilteredTexture(imagename, number):
+        global textures
+
+        image = open(imagename)
+        ix = image.size[0]
+        iy = image.size[1]
+        image = image.tostring("raw", "RGBX", 0, -1)
+
+        glBindTexture(GL_TEXTURE_2D, int(textures[number]))   
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR)
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
+
+def CreateMipMappedTexture(imagename, number):
+        global textures
+
+        image = open(imagename)
+        ix = image.size[0]
+        iy = image.size[1]
+        image = image.tostring("raw", "RGBX", 0, -1)
+
+        glBindTexture(GL_TEXTURE_2D, int(textures[number]))
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST)
+        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, ix, iy, GL_RGBA, GL_UNSIGNED_BYTE, image)
 
 def LoadTextures(number):
 	global texture_num, textures
 
 	textures = glGenTextures(number)
 	CreateTexture("texturedyellow.jpg",0)
-	CreateTexture("nha.jpg", 1)
-	CreateTexture("bathroomfloor.png",2)
+	CreateLinearFilteredTexture("nha.jpg", 1)
+	CreateMipMappedTexture("bathroomfloor.png",2)
 
 
 def InitGL(Width, Height): 
@@ -165,7 +190,7 @@ def projectile():
 	glPopMatrix()
 	'''
 	
-	
+	glDisable(GL_TEXTURE_2D)
 	# Side Wall
 	glPushMatrix()
 	glTranslate(42,5,0)
@@ -177,10 +202,10 @@ def projectile():
 	
 	#Back Wall
 	glPushMatrix()
-	glTranslate(18,8,-10)
+	glTranslate(18,8,-15)
 	glScale(56,45,0.2)
 	glColor3f(0, 1, 1)
-	#glutSolidCube(1)
+	glutSolidCube(1)
 	glPopMatrix()
 		
 	position =  [0.0, 0.0, 0.0, 1.0]
@@ -211,7 +236,7 @@ def projectile():
 	glTranslate(18,-9.5,0)
 	glScale(55,2,26)
 	glColor3f(1.0, 1.0, 0.0)
-	glutSolidCube(1)
+	#glutSolidCube(1)
 	glPopMatrix()
 	
 	#BasketRing
@@ -259,6 +284,7 @@ def projectile():
 	glColor3f(0.9,0.0,0.0)
 	glTranslatef(movx,movy,0)
 	glutSolidSphere(0.5,20,10)
+	glEnable(GL_TEXTURE_2D)
 
 	glFlush()
 	glutSwapBuffers()
