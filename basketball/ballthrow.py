@@ -17,6 +17,10 @@ Added reset feature
 Change camera manually using keyboard key 'c'
 
 Added textures using Image library 
+texture functions taken from example program CubeT1.py
+
+Modify camera and added custom camera view
+
 
 '''
 
@@ -47,6 +51,10 @@ start=0	#trigger
 final_view = 0
 wallcollide=0   #collision control
 camera=0	#camera control
+
+eye_x,eye_y,eye_z = 0,0,15
+center_x,center_y,center_z = 0,0,0
+up_x,up_y,up_z = 0,1,0
 
 def CreateTexture(imagename, number):
         global textures
@@ -150,18 +158,18 @@ def projectile():
 	glBindTexture(GL_TEXTURE_2D, int(textures[0]))
 	glBegin(GL_QUADS)                               # Start Drawing The Cube
 
-	# Front Face (note that the texture's corners have to match the quad's corners)
-	glTexCoord2f(0.0, 0.0); glVertex3f(-14.0, -10.0,  -12.0)    # Bottom Left Of The Texture and Quad
+	# Yellow wall
+	glTexCoord2f(0.0, 0.0); glVertex3f(-18.0, -10.0,  -12.0)    # Bottom Left Of The Texture and Quad
 	glTexCoord2f(1.0, 0.0); glVertex3f( 45.0, -10.0,  -12.0)    # Bottom Right Of The Texture and Quad
 	glTexCoord2f(1.0, 1.0); glVertex3f( 45.0,  30.0,  -12.0)    # Top Right Of The Texture and Quad
-	glTexCoord2f(0.0, 1.0); glVertex3f(-14.0,  30.0,  -12.0)    # Top Left Of The Texture and Quad
+	glTexCoord2f(0.0, 1.0); glVertex3f(-18.0,  30.0,  -12.0)    # Top Left Of The Texture and Quad
 
 	glEnd()
 	
 	glBindTexture(GL_TEXTURE_2D, int(textures[1]))
 	glBegin(GL_QUADS)                               # Start Drawing The Cube
 
-	# Front Face (note that the texture's corners have to match the quad's corners)
+	# nha  Green Wall
 	glTexCoord2f(0.0, 0.0); glVertex3f(40.0, -15.0,  -13.0)    # Bottom Left Of The Texture and Quad
 	glTexCoord2f(1.0, 0.0); glVertex3f( 40.0, -15.0,  28.0)    # Bottom Right Of The Texture and Quad
 	glTexCoord2f(1.0, 1.0); glVertex3f( 40.0,  30.0,  28.0)    # Top Right Of The Texture and Quad
@@ -172,7 +180,7 @@ def projectile():
 	glBindTexture(GL_TEXTURE_2D, int(textures[2]))
 	glBegin(GL_QUADS)                               # Start Drawing The Cube
 
-	# Front Face (note that the texture's corners have to match the quad's corners)
+	#Floor
 	glTexCoord2f(0.0, 0.0); glVertex3f(-18.0, -8.5,  -13.0)    # Bottom Left Of The Texture and Quad
 	glTexCoord2f(1.0, 0.0); glVertex3f( -18.0, -8.5,  28.0)    # Bottom Right Of The Texture and Quad
 	glTexCoord2f(1.0, 1.0); glVertex3f( 40.0,  -8.5,  28.0)    # Top Right Of The Texture and Quad
@@ -373,32 +381,105 @@ def reset_game():
 	elbow = 0
 	final_view = 0
 	
+			
 def camera_view():
-	global camera1,camera2,camera3
+	global camera
+	global eye_x,eye_y,eye_z
+	global up_x,up_y,up_z
+	global center_x,center_y,center_z
+	
 	if camera==0:
 		glTranslate(12,2,5)
+		eye_x,eye_y,eye_z,center_x,center_y,center_z,up_x,up_y,up_z = 0,0,15,0,0,0,0,1,0
 	elif camera==1:
-		gluLookAt(0,0,5,-5,-5,0,0,1,0,)
+		eye_x,eye_y,eye_z,center_x,center_y,center_z,up_x,up_y,up_z = 0,0,15,0,0,0,0,1,0
+		gluLookAt(0,5,5,-8,-8,0,0,1,-5,)
+		#gluLookAt(0,0,5,-5,-5,0,0,1,0,)
 	elif camera==2:
+		eye_x,eye_y,eye_z,center_x,center_y,center_z,up_x,up_y,up_z = 0,0,15,0,0,0,0,1,0
 		gluLookAt(0,10,5,0,-5,0,0,1,0,)
-	elif camera==3:	
+	elif camera==3:
+		eye_x,eye_y,eye_z,center_x,center_y,center_z,up_x,up_y,up_z = 0,0,15,0,0,0,0,1,0	
 		glRotate(30,1,0,0)
 		glRotate(110,0,1,0)
 	elif camera==4:
-		pass
-	else:
 		gluLookAt(0,0,15,0,0,0,0,1,0,)
+		#eye_x,eye_y,eye_z,center_x,center_y,center_z,up_x,up_y,up_z = 0,0,15,0,0,0,0,1,0
+	elif camera==5:	
+		gluLookAt(eye_x,eye_y,eye_z,center_x,center_y,center_z,up_x,up_y,up_z)
+	else:
+		gluLookAt(0,0,15,0,0,0,0,1,0,)	
+					
 		
 def keyboard(key, x, y):
 	global camera
+	global eye_x,eye_y,eye_z
+	global center_x,center_y,center_z
+	global up_x,up_y,up_z
+
+
 
 	if key == chr(27): sys.exit(0)
 	elif key == 'c':
-		camera = (camera + 1)%6
+		camera = (camera + 1)%7
 		glutPostRedisplay()
 	elif key == 'C':
-		camera = (camera - 1)%6
-		glutPostRedisplay()			
+		camera = (camera - 1)%7
+		glutPostRedisplay()
+	elif key == '1':
+		eye_x = eye_x + 0.1
+		glutPostRedisplay()
+	elif key == '!':
+		eye_x = eye_x - 0.1
+		glutPostRedisplay()	
+	elif key == '2':
+		eye_y = eye_y + 0.1
+		glutPostRedisplay()
+	elif key == '@':
+		eye_y = eye_y - 0.1
+		glutPostRedisplay()
+	elif key == '3':
+		eye_z = eye_z + 0.1
+		glutPostRedisplay()
+	elif key == '#':
+		eye_z = eye_z - 0.1
+		glutPostRedisplay()	
+	elif key == '4':
+		center_x = center_x + 0.1
+		glutPostRedisplay()
+	elif key == '$':
+		center_x = center_x - 0.1
+		glutPostRedisplay()	
+	elif key == '5':
+		center_y = center_y + 0.1
+		glutPostRedisplay()
+	elif key == '%':
+		center_y = center_y - 0.1
+		glutPostRedisplay()
+	elif key == '6':
+		center_z = center_z + 0.1
+		glutPostRedisplay()
+	elif key == '^':
+		center_z = center_z - 0.1
+		glutPostRedisplay()
+	elif key == '7':
+		up_x = up_x + 0.1
+		glutPostRedisplay()
+	elif key == '&':
+		up_x = up_x - 0.1
+		glutPostRedisplay()	
+	elif key == '8':
+		up_y = up_y + 0.1
+		glutPostRedisplay()
+	elif key == '*':
+		up_y = up_y - 0.1
+		glutPostRedisplay()
+	elif key == '9':
+		up_z = up_z + 0.1
+		glutPostRedisplay()
+	elif key == '(':
+		up_z = up_z - 0.1
+		glutPostRedisplay()		
 
 def main():
  
