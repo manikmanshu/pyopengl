@@ -20,6 +20,7 @@ Added textures using Image library
 texture functions taken from example program CubeT1.py
 
 Modify camera and added custom camera view
+Right Mouse click menu added
 
 
 '''
@@ -31,76 +32,82 @@ from PIL.Image import *
 from math import *
 import time
 
-#v0 = 150		#initial velocity
-#angle = 45	#initial direction
-v0 = input("ENter velocity: ") #150		#initial velocity
-angle = input("Enter direction: ") #45	#initial direction	
-radangle = (angle*3.14)/180  # degree to radians
-temp_vel=v0
-t = 0
-a=-3	#initial x-coord of ball position
-b=-2	#initial y-coord of ball position
-movx = a
-movy = b
-x=-3
-y=-8
-shoulder = 0.0  #robot arm variables
-elbow = 0.0
 
-start=0	#trigger
-final_view = 0
-wallcollide=0   #collision control
-camera=0	#camera control
+def globals_var():
+	global v0,t,angle,movx,movy,a,b,radangle,x,y,wallcollide,tx,ty,start
+	global shoulder,elbow,temp_vel,camera
+	global eye_x,eye_y,eye_z
+	global center_x,center_y,center_z
+	global up_x,up_y,up_z
+	
+	v0 = input("ENter velocity: ") 		#150	#initial velocity
+	angle = input("Enter direction: ") 	#45		#initial direction	
+	radangle = (angle*3.14)/180  		# degree to radians
+	temp_vel=v0
+	t = 0
+	a=-3	#initial x-coord of ball position
+	b=-2	#initial y-coord of ball position
+	movx = a
+	movy = b
+	x=-3
+	y=-8
+	shoulder = 0.0  #robot arm variables
+	elbow = 0.0
 
-eye_x,eye_y,eye_z = 0,0,15
-center_x,center_y,center_z = 0,0,0
-up_x,up_y,up_z = 0,1,0
+	start=0			#trigger
+	final_view = 0
+	wallcollide=0   #collision control
+	camera=0	#camera control
+
+	eye_x,eye_y,eye_z = 0,0,15
+	center_x,center_y,center_z = 0,0,0
+	up_x,up_y,up_z = 0,1,0
 
 def CreateTexture(imagename, number):
-        global textures
+	global textures
 
-        image = open(imagename)
-        ix = image.size[0]
-        iy = image.size[1]
-        image = image.tostring("raw", "RGBX", 0, -1)
+	image = open(imagename)
+	ix = image.size[0]
+	iy = image.size[1]
+	image = image.tostring("raw", "RGBX", 0, -1)
 
-        glBindTexture(GL_TEXTURE_2D, int(textures[number]))   
+	glBindTexture(GL_TEXTURE_2D, int(textures[number]))   
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT,1)
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+	glPixelStorei(GL_UNPACK_ALIGNMENT,1)
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
         
 def CreateLinearFilteredTexture(imagename, number):
-        global textures
+	global textures
 
-        image = open(imagename)
-        ix = image.size[0]
-        iy = image.size[1]
-        image = image.tostring("raw", "RGBX", 0, -1)
+	image = open(imagename)
+	ix = image.size[0]
+	iy = image.size[1]
+	image = image.tostring("raw", "RGBX", 0, -1)
 
-        glBindTexture(GL_TEXTURE_2D, int(textures[number]))   
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
+	glBindTexture(GL_TEXTURE_2D, int(textures[number]))   
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR)
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
 
 def CreateMipMappedTexture(imagename, number):
-        global textures
+	global textures
 
-        image = open(imagename)
-        ix = image.size[0]
-        iy = image.size[1]
-        image = image.tostring("raw", "RGBX", 0, -1)
+	image = open(imagename)
+	ix = image.size[0]
+	iy = image.size[1]
+	image = image.tostring("raw", "RGBX", 0, -1)
 
-        glBindTexture(GL_TEXTURE_2D, int(textures[number]))
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST)
-        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, ix, iy, GL_RGBA, GL_UNSIGNED_BYTE, image)
+	glBindTexture(GL_TEXTURE_2D, int(textures[number]))
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST)
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, ix, iy, GL_RGBA, GL_UNSIGNED_BYTE, image)
 
 def LoadTextures(number):
 	global texture_num, textures
@@ -112,7 +119,7 @@ def LoadTextures(number):
 
 
 def InitGL(Width, Height): 
-	
+
 	LoadTextures(3)
 	glEnable(GL_TEXTURE_2D)     
 	glClearDepth(1.0)                       
@@ -127,13 +134,13 @@ def InitGL(Width, Height):
 	#gluLookAt(0,0,5,2,0.5,0,0,1,0,)
 	glTranslate(-18,0,-15)
 	glMatrixMode(GL_MODELVIEW)
-	
+
 	glEnable(GL_LIGHTING)
 	glEnable(GL_LIGHT0)
 	glEnable(GL_DEPTH_TEST)
 	glEnable(GL_COLOR_MATERIAL)
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS,20)
-	
+
 	mat_shininess = [30.0]
 	white_light = [0.8, 0.8, 0.8, 1.0]
 	glShadeModel(GL_SMOOTH)
@@ -156,7 +163,7 @@ def projectile():
 	camera_view()	#different camera shots
 
 	glBindTexture(GL_TEXTURE_2D, int(textures[0]))
-	glBegin(GL_QUADS)                               # Start Drawing The Cube
+	glBegin(GL_QUADS)
 
 	# Yellow wall
 	glTexCoord2f(0.0, 0.0); glVertex3f(-18.0, -10.0,  -12.0)    # Bottom Left Of The Texture and Quad
@@ -167,7 +174,7 @@ def projectile():
 	glEnd()
 	
 	glBindTexture(GL_TEXTURE_2D, int(textures[1]))
-	glBegin(GL_QUADS)                               # Start Drawing The Cube
+	glBegin(GL_QUADS)
 
 	# nha  Green Wall
 	glTexCoord2f(0.0, 0.0); glVertex3f(40.0, -15.0,  -13.0)    # Bottom Left Of The Texture and Quad
@@ -178,7 +185,7 @@ def projectile():
 	glEnd()
 
 	glBindTexture(GL_TEXTURE_2D, int(textures[2]))
-	glBegin(GL_QUADS)                               # Start Drawing The Cube
+	glBegin(GL_QUADS)
 
 	#Floor
 	glTexCoord2f(0.0, 0.0); glVertex3f(-18.0, -8.5,  -13.0)    # Bottom Left Of The Texture and Quad
@@ -304,9 +311,9 @@ def move():
 	if wallcollide==0:
 		if radangle > 0 :
 			
-			vx = v0*cos(radangle)		#velocity in x- direction
+			vx = v0*cos(radangle)			#velocity in x- direction
 			vy = v0*sin(radangle) - 9.8*t	#velocity in y-direction
-			movx = a+v0*t*cos(radangle)	#instantaneous x - position
+			movx = a+v0*t*cos(radangle)		#instantaneous x - position
 			movy = b+v0*t*sin(radangle) - 4.9*t*t #instantaneous y-position
 			
 			if movx >=38:
@@ -316,13 +323,13 @@ def move():
 				#t=0
 				
 			if vx!=0:
-				radangle = atan(vy/vx)	#instantaneous angle
+				radangle = atan(vy/vx)		#instantaneous angle
 			
 			if movx >= 35.8 and movx <= 36.5:
 				if movy >=15.1 and movy <=16.3:
 					wallcollide = 2
 				
-			#print movx,movy		
+		#print movx,movy		
 		#Momentum Conservation
 		else:
 			v0 = v0/1.5
@@ -360,9 +367,10 @@ def move():
 			wallcollide = 3	
 
 	else:
-		time.sleep(3)
+		time.sleep(1)	
 		reset_game()
-		pass
+		time.sleep(1)
+		
 	t=t+0.001
 	glutPostRedisplay()
 	
@@ -416,8 +424,6 @@ def keyboard(key, x, y):
 	global eye_x,eye_y,eye_z
 	global center_x,center_y,center_z
 	global up_x,up_y,up_z
-
-
 
 	if key == chr(27): sys.exit(0)
 	elif key == 'c':
@@ -526,6 +532,7 @@ def writetext():
 
 def main():
  
+	globals_var()
 	glutInit(sys.argv)
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
 	glutInitWindowSize(1000,700)
