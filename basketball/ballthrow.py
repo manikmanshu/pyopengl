@@ -481,6 +481,49 @@ def keyboard(key, x, y):
 		up_z = up_z - 0.1
 		glutPostRedisplay()		
 
+def menuFunc(value):
+	global selected, picture, style,camera
+	if (value == 10):
+		pass
+	if (value == 40):
+		camera = 0
+	if (value == 41):
+		camera = 1
+	if (value == 42):
+		camera = 2
+	if (value == 43):
+		camera = 3
+	if (value == 44):
+		camera = 4
+	if (value == 45):
+		camera = 5
+	if(value == 14):
+		exit(1)
+	return 0
+
+
+#writetext function implements mouse right click option menu	
+def writetext():
+    #int submenu1, submenu2;
+    submenu1 = glutCreateMenu(menuFunc)
+    glutAddMenuEntry("Yes", 10)
+    glutAddMenuEntry("No", 11)
+    submenu2 = glutCreateMenu(menuFunc)
+    glutAddMenuEntry("1 Close to Trigger", 40)
+    glutAddMenuEntry("2 Side top ", 41)
+    glutAddMenuEntry("3 Top View", 42)
+    glutAddMenuEntry("4 Back View", 43)
+    glutAddMenuEntry("5 Normal View", 44)
+    glutAddMenuEntry("6 Custom", 45)
+    glutCreateMenu(menuFunc)
+    #glutAddSubMenu("Texture", submenu1)
+    glutAddSubMenu("Change Camera", submenu2)
+    glutAddMenuEntry("Quit", 14)
+
+    glutAttachMenu(GLUT_RIGHT_BUTTON)
+    glutPostRedisplay ()		
+	
+
 def main():
  
 	glutInit(sys.argv)
@@ -493,6 +536,7 @@ def main():
 	glutIdleFunc(projectile)
 	glutKeyboardFunc(keyboard)
 	InitGL(640, 480)
+	writetext()
 	glutMainLoop()
         
 if __name__ == "__main__":
