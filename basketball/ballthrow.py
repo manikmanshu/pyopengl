@@ -22,9 +22,9 @@ texture functions taken from example program CubeT1.py
 Modify camera and added custom camera view
 Right Mouse click menu added
 
-
 '''
 
+#All imports
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
@@ -32,9 +32,9 @@ from PIL.Image import *
 from math import *
 import time
 
-
+#Global variables initialized
 def globals_var():
-	global v0,t,angle,movx,movy,a,b,radangle,x,y,wallcollide,tx,ty,start
+	global v0,t,angle,movx,movy,a,b,radangle,wallcollide,start
 	global shoulder,elbow,temp_vel,camera
 	global eye_x,eye_y,eye_z
 	global center_x,center_y,center_z
@@ -49,15 +49,13 @@ def globals_var():
 	b=-2	#initial y-coord of ball position
 	movx = a
 	movy = b
-	x=-3
-	y=-8
 	shoulder = 0.0  #robot arm variables
 	elbow = 0.0
 
 	start=0			#trigger
 	final_view = 0
 	wallcollide=0   #collision control
-	camera=0	#camera control
+	camera=0		#camera control
 
 	eye_x,eye_y,eye_z = 0,0,15
 	center_x,center_y,center_z = 0,0,0
@@ -149,9 +147,12 @@ def InitGL(Width, Height):
 	glEnable(GL_CULL_FACE)
 	glCullFace(GL_BACK)
 	
+# Idle function
+# Draws the different parts of basket ball game
+# Draws the texture images
 
 def projectile():
-	global a,b,movx,movy,x,y,elbow,shoulder,start,final_view
+	global a,b,movx,movy,elbow,shoulder,start,final_view
 	global textures
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -304,6 +305,11 @@ def projectile():
 	glFlush()
 	glutSwapBuffers()
 
+
+# Move function does the projectile motion of ball
+# Handle collision with the ball
+# Detects if ball is near the basket ring
+# Restarts the ball when ball stops
 	
 def move():
 	global v0,t,angle,movx,movy,a,b,radangle,wallcollide,tx,ty
@@ -325,7 +331,7 @@ def move():
 			if vx!=0:
 				radangle = atan(vy/vx)		#instantaneous angle
 			
-			if movx >= 35.8 and movx <= 36.5:
+			if movx >= 35.8 and movx <= 38.5:
 				if movy >=15.1 and movy <=16.3:
 					wallcollide = 2
 				
@@ -373,9 +379,10 @@ def move():
 		
 	t=t+0.001
 	glutPostRedisplay()
-	
+
+# Restarts the throwing ball	
 def reset_game():
-	global v0,t,angle,movx,movy,a,b,radangle,x,y,wallcollide,tx,ty,start
+	global v0,t,angle,movx,movy,a,b,radangle,x,y,wallcollide,start
 	global shoulder,elbow,temp_vel
 	t=0
 	v0 = temp_vel
@@ -418,7 +425,16 @@ def camera_view():
 	else:
 		gluLookAt(0,0,15,0,0,0,0,1,0,)	
 					
-		
+'''
+Keyboard functionality
+'c' or 'C' for Camera View Change
+1,2,3,4,5,6,7,8,9 keys controls  9 gluLookAt parameters
+
+shift + number key reverse above action
+
+!,@,#,$,%,^,&,*,( 
+
+'''		
 def keyboard(key, x, y):
 	global camera
 	global eye_x,eye_y,eye_z
@@ -487,6 +503,7 @@ def keyboard(key, x, y):
 		up_z = up_z - 0.1
 		glutPostRedisplay()		
 
+#Controls right click menu options
 def menuFunc(value):
 	global selected, picture, style,camera
 	if (value == 10):
@@ -510,26 +527,26 @@ def menuFunc(value):
 
 #writetext function implements mouse right click option menu	
 def writetext():
-    #int submenu1, submenu2;
-    submenu1 = glutCreateMenu(menuFunc)
-    glutAddMenuEntry("Yes", 10)
-    glutAddMenuEntry("No", 11)
-    submenu2 = glutCreateMenu(menuFunc)
-    glutAddMenuEntry("1 Close to Trigger", 40)
-    glutAddMenuEntry("2 Side top ", 41)
-    glutAddMenuEntry("3 Top View", 42)
-    glutAddMenuEntry("4 Back View", 43)
-    glutAddMenuEntry("5 Normal View", 44)
-    glutAddMenuEntry("6 Custom", 45)
-    glutCreateMenu(menuFunc)
-    #glutAddSubMenu("Texture", submenu1)
-    glutAddSubMenu("Change Camera", submenu2)
-    glutAddMenuEntry("Quit", 14)
+	#int submenu1, submenu2;
+	submenu1 = glutCreateMenu(menuFunc)
+	glutAddMenuEntry("Yes", 10)
+	glutAddMenuEntry("No", 11)
+	submenu2 = glutCreateMenu(menuFunc)
+	glutAddMenuEntry("1 Close to Trigger", 40)
+	glutAddMenuEntry("2 Side top ", 41)
+	glutAddMenuEntry("3 Top View", 42)
+	glutAddMenuEntry("4 Back View", 43)
+	glutAddMenuEntry("5 Normal View", 44)
+	glutAddMenuEntry("6 Custom", 45)
+	glutCreateMenu(menuFunc)
+	#glutAddSubMenu("Texture", submenu1)
+	glutAddSubMenu("Change Camera", submenu2)
+	glutAddMenuEntry("Quit", 14)
 
-    glutAttachMenu(GLUT_RIGHT_BUTTON)
-    glutPostRedisplay ()		
-	
+	glutAttachMenu(GLUT_RIGHT_BUTTON)
+	glutPostRedisplay ()		
 
+#main function to set the glut window for OPENGL	
 def main():
  
 	globals_var()
