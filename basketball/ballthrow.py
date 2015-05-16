@@ -40,8 +40,8 @@ def globals_var():
 	global center_x,center_y,center_z
 	global up_x,up_y,up_z
 	
-	v0 = input("ENter velocity: ") 		#150	#initial velocity
-	angle = input("Enter direction: ") 	#45		#initial direction	
+	v0 = input("Enter velocity of the ball: ") 					#150	#initial velocity
+	angle = input("Enter direction(Angle of projection): ") 	#45		#initial direction	
 	radangle = (angle*3.14)/180  		# degree to radians
 	temp_vel=v0
 	t = 0
